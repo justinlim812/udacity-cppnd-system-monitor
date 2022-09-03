@@ -96,7 +96,7 @@ float LinuxParser::MemoryUtilization() {
   return ((memTotal - memFree) / memTotal); 
 }
 
-// TODO: Read and return the system uptime
+// Read and return the system uptime
 long LinuxParser::UpTime() {
   long systemUptime, idleTime;
   string line;
@@ -108,18 +108,6 @@ long LinuxParser::UpTime() {
   }
   return systemUptime; 
 }
-
-// string LinuxParser::Kernel() {
-//   string os, kernel, version;
-//   string line;
-//   std::ifstream stream(kProcDirectory + kVersionFilename);
-//   if (stream.is_open()) {
-//     std::getline(stream, line);
-//     std::istringstream linestream(line);
-//     linestream >> os >> version >> kernel;
-//   }
-//   return kernel;
-// }
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }
