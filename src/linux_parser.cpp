@@ -26,11 +26,11 @@ T findValueByKey(std::string const& keyFilter, std::string const& filename) {
       while (linestream >> key >> value) {
         if (key == keyFilter) {
           filestream.close();
-          return value;
         }
       }
     }
   }
+  return value;
 }
 
 // DONE: An example of how to read data from the filesystem
