@@ -17,10 +17,16 @@ const std::string kMeminfoFilename{"/meminfo"};
 const std::string kVersionFilename{"/version"};
 const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
+const std::string filterMemTotalKey{"MemTotal"};
+const std::string filterMemFreeKey{"MemFree"};
+const std::string filterProcessKey{"processes"};
+const std::string filterRunningProcessesKey{"procs_running"};
+const std::string filterVmRssKey{"VmRSS"};
+const std::string filterUidKey{"Uid"};
 
 // System
 float MemoryUtilization();
-long UpTime();
+long int UpTime();
 std::vector<int> Pids();
 int TotalProcesses();
 int RunningProcesses();
@@ -40,7 +46,7 @@ enum CPUStates {
   kGuest_,
   kGuestNice_
 };
-std::vector<std::string> CpuUtilization();
+std::vector<std::string> CpuUtilization(); // Process's cpu utilization
 long Jiffies();
 long ActiveJiffies();
 long ActiveJiffies(int pid);
