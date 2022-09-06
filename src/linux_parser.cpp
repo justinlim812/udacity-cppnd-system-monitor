@@ -1,10 +1,11 @@
+#include "linux_parser.h"
+
 #include <dirent.h>
+#include <unistd.h>
+
 #include <sstream>
 #include <string>
-#include <unistd.h>
 #include <vector>
-
-#include "linux_parser.h"
 
 using std::stof;
 using std::string;
@@ -13,17 +14,17 @@ using std::vector;
 
 // Helper function to help parse value from a specific key
 template <typename T>
-T findValueByKey(std::string const& keyFilter, std::string const& filename){
+T findValueByKey(std::string const& keyFilter, std::string const& filename) {
   string line;
   string key;
   T value;
 
   std::ifstream filestream(LinuxParser::kProcDirectory + filename);
-  if(filestream.is_open()){
-    while(std::getline(filestream,line)){
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
-      while(linestream >> key >> value){
-        if(key == keyFilter){
+      while (linestream >> key >> value) {
+        if (key == keyFilter) {
           filestream.close();
           return value;
         }
@@ -103,11 +104,9 @@ float LinuxParser::MemoryUtilization() {
       while (linestream >> key >> value) {
         if (key == filterMemTotalKey) {
           memTotal = value;
-        } 
-        else if (key == filterMemFreeKey) {
+        } else if (key == filterMemFreeKey) {
           memFree = value;
-        } 
-        else {
+        } else {
           break;
         }
       }
@@ -138,14 +137,14 @@ long LinuxParser::Jiffies() {
   string cpu;
   long jiffies{0}, totalJiffies{0};
   std::ifstream stream(kProcDirectory + kStatFilename);
-  if(stream.is_open()){
+  if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
 
     // Discard the first value which is cpu string
     linestream >> cpu;
 
-    for(int i = 0; i < 7; i++){
+    for (int i = 0; i < 7; i++) {
       linestream >> jiffies;
       totalJiffies += jiffies;
     }
@@ -160,19 +159,19 @@ long LinuxParser::ActiveJiffies(int pid) {
   string dump;
   long activeJiffies{0}, totalActiveJiffies{0};
   std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
-  if(stream.is_open()){
+  if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
 
     //  Discard whatever values before active jiffies (#14, 15, 16, 17)
-    for (int i = 0; i < 13; i++){
+    for (int i = 0; i < 13; i++) {
       linestream >> dump;
     }
-    
+
     // Store active jiffies in four loops
-    for (int j = 0; j < 4; j++){
+    for (int j = 0; j < 4; j++) {
       linestream >> activeJiffies;
-      totalActiveJiffies +=  activeJiffies;
+      totalActiveJiffies += activeJiffies;
     }
     stream.close();
   }
@@ -180,12 +179,12 @@ long LinuxParser::ActiveJiffies(int pid) {
 }
 
 // Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies(){
+long LinuxParser::ActiveJiffies() {
   string line;
   string cpu;
   long activeJiffies{0}, totalActiveJiffies{0};
   std::ifstream stream(kProcDirectory + kStatFilename);
-  if(stream.is_open()){
+  if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
 
@@ -193,11 +192,11 @@ long LinuxParser::ActiveJiffies(){
     linestream >> cpu;
 
     // Jiffies from user all the way to steal
-    for (int i = 0; i < 8; i++){
+    for (int i = 0; i < 8; i++) {
       linestream >> activeJiffies;
 
       // Store only jiffies that are not idle and iowait
-      if(i != 3 && i != 4){
+      if (i != 3 && i != 4) {
         totalActiveJiffies += activeJiffies;
       }
     }
@@ -212,7 +211,7 @@ long LinuxParser::IdleJiffies() {
   string cpu;
   long idleJiffies{0}, totalIdleJiffies{0};
   std::ifstream stream(kProcDirectory + kStatFilename);
-  if(stream.is_open()){
+  if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
 
@@ -220,11 +219,11 @@ long LinuxParser::IdleJiffies() {
     linestream >> cpu;
 
     // Discard the jiffies before idle and iowait
-    for(int i = 0; i < 5; i++){
+    for (int i = 0; i < 5; i++) {
       linestream >> idleJiffies;
 
       // Store only idle and iowait jiffies
-      if (i == 3 || i == 4){
+      if (i == 3 || i == 4) {
         totalIdleJiffies += idleJiffies;
       }
     }
@@ -239,11 +238,11 @@ vector<string> LinuxParser::CpuUtilization() {
   string cpu, jiffies;
   vector<string> jiffiesVector;
   std::ifstream stream(kProcDirectory + kStatFilename);
-  if(stream.is_open()){
+  if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
     linestream >> cpu;
-    for(int i = 0; i < 8; i++){
+    for (int i = 0; i < 8; i++) {
       linestream >> jiffies;
       jiffiesVector.emplace_back(jiffies);
     }
@@ -272,9 +271,10 @@ string LinuxParser::Command(int pid) {
     stream.close();
   }
 
-  // Return NULL if there is no command or truncate line if more than 40 characters
-  if(line.length()){
-    if (line.length() > 40){
+  // Return NULL if there is no command or truncate line if more than 40
+  // characters
+  if (line.length()) {
+    if (line.length() > 40) {
       std::string lineTruncated = line.substr(0, 40) + "...";
       return lineTruncated;
     }
@@ -293,7 +293,8 @@ string LinuxParser::Ram(int pid) {
       std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestream(line);
       linestream >> key >> ram;
-      if (key == filterVmRssKey) { // Using VmRSS (Physical RAM) instead of VmSize (Virtual RAM)
+      if (key == filterVmRssKey) {  // Using VmRSS (Physical RAM) instead of
+                                    // VmSize (Virtual RAM)
         break;
       }
     }
@@ -321,7 +322,8 @@ string LinuxParser::Uid(int pid) {
   return userID;
 }
 
-// Read and return the user associated with a process (matching process' uid to username)
+// Read and return the user associated with a process (matching process' uid to
+// username)
 string LinuxParser::User(int pid) {
   string line;
   string user, x, userID;
@@ -342,7 +344,8 @@ string LinuxParser::User(int pid) {
   return user;
 }
 
-// Read and return the process the process started after system boot (in seconds)
+// Read and return the process the process started after system boot (in
+// seconds)
 long int LinuxParser::UpTime(int pid) {
   string line;
   string dump;
@@ -353,7 +356,7 @@ long int LinuxParser::UpTime(int pid) {
     std::istringstream linestream(line);
 
     // Process start time at #22
-    for (int i = 0; i < 21; i++){
+    for (int i = 0; i < 21; i++) {
       linestream >> dump;
     }
     linestream >> processStartTime;

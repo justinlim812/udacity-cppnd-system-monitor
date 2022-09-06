@@ -10,13 +10,13 @@ class Process {
  public:
   // Construct class using process ID
   Process(const int pid);
-  
-  int Pid();                               
-  std::string User();                      
-  std::string Command();                   
-  float CpuUtilization() const;                  
-  std::string Ram() const;                      
-  long int UpTime();                      
+
+  int Pid();
+  std::string User();
+  std::string Command();
+  float CpuUtilization() const;
+  std::string Ram() const;
+  long int UpTime();
   bool operator<(Process const& a) const;
 
   // Declare any necessary private members

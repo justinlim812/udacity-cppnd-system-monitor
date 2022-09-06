@@ -6,7 +6,7 @@ class Processor {
   float Utilization();
 
  private:
-    float Utilization_;
+  float Utilization_;
 };
 
 #endif

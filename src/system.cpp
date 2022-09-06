@@ -1,10 +1,11 @@
 #include "system.h"
 
+#include <unistd.h>
+
 #include <cstddef>
 #include <iostream>
 #include <set>
 #include <string>
-#include <unistd.h>
 #include <vector>
 
 #include "linux_parser.h"
@@ -17,22 +18,23 @@ using std::string;
 using std::vector;
 
 // Return the system's CPU
-Processor& System::Cpu() {return cpu_;}
+Processor& System::Cpu() { return cpu_; }
 
 // Return a container composed of the system's processes
 vector<Process>& System::Processes() {
-
-  // Processes panel will get cluttered by the same process after many times, need to clear
+  // Processes panel will get cluttered by the same process after many times,
+  // need to clear
   processes_.clear();
 
   vector<int> processList = LinuxParser::Pids();
   for (long unsigned int i = 0; i < processList.size(); i++) {
-    
-    // Do not need to call constructor if using emplace_back into vector or some class thatinitialize with set of arguments
+    // Do not need to call constructor if using emplace_back into vector or some
+    // class thatinitialize with set of arguments
     processes_.emplace_back(processList[i]);
   }
 
-  // Sort the processes based on cpu utilization with operator overloading defined in process.cpp
+  // Sort the processes based on cpu utilization with operator overloading
+  // defined in process.cpp
   std::sort(processes_.begin(), processes_.end());
   return processes_;
 }
