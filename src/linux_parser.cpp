@@ -344,7 +344,7 @@ string LinuxParser::User(int pid) {
   return user;
 }
 
-// Read and return the process the process started after system boot (in
+// Read and return the time the process started after system boot (in
 // seconds)
 long int LinuxParser::UpTime(int pid) {
   string line;
